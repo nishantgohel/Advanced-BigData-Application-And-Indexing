@@ -1,0 +1,156 @@
+GET _search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+GET planindexpc
+
+PUT planindexpc
+{
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "linkedPlanServices": {
+          "type": "nested" 
+        },
+        "creationDate": {
+          "type":   "date",
+          "format": "dd-MM-yyyy"
+        }
+      }
+    }
+  }
+}
+
+GET planindexpc/_search
+{
+    "query": {
+        "range" : {
+            "planCostShares.deductible": {
+                "gt": 50,
+                "lte" : 100 
+            }
+        }
+    }
+}
+
+GET planindexpc/_search
+{
+    "query": {
+        "range" : {
+            "planCostShares.copay": {
+                "gte": 5000
+                
+            }
+        }
+    }
+}
+
+
+
+
+
+GET planindexpc/_search
+{
+    "query": {
+        "exists" : { "field" : "planCostShares.deductible" }
+    }
+}
+
+
+
+GET planindexpc/_search
+{
+    "query": {
+        "range" : {
+            "creationDate": {
+                "gte": "01-01-2000",
+                "lte": "01-01-2010",
+                "format": "dd-MM-yyyy"
+            }
+        }
+    }
+}
+
+GET planindexpc/_search
+{
+    "query": {
+        "range" : {
+            "creationDate": {
+                "lte": "01-01-2000",
+                "format": "dd-MM-yyyy"
+            }
+        }
+    }
+}
+
+GET planindexpc/_search
+{
+    "query": {
+        "wildcard" : { 
+          "planCostShares._org": "*.com" 
+          
+        }
+    }
+}
+
+GET planindexpc/_search
+{
+  "query": {
+    "nested": {
+      "path": "linkedPlanServices",
+      "query": {
+        "bool": {
+          "must": [
+            
+            { "wildcard": { "linkedPlanServices.linkedService.name.keyword":  "Dark*" }} 
+          ]
+        }
+      }
+    }
+  }
+}
+
+
+GET planindexpc/_search
+{
+  "query": {
+    "nested": {
+      "path": "linkedPlanServices",
+      "query": {
+        "bool": {
+          "must": [
+            
+            { "match": { "linkedPlanServices.linkedService._org":  "kalel.com" }} 
+          ]
+        }
+      }
+    }
+  }
+}
+
+
+POST planindexpc/_search
+{
+    "query": {
+        "multi_match" : {
+            "query" : "inNetwo",
+            "fields": ["planType"],
+            "fuzziness": "AUTO"
+        }
+    },
+    "_source": ["_org","objectId","objectType","planType","creationDate"]
+    
+}
+
+
+
+
+
+
+
+
+
+DELETE /planindexpc
